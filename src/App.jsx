@@ -93,19 +93,26 @@ function timeAgo(iso) {
 }
 
 async function loadPosts() {
-  if (!supabase) return SEED_POSTS;
+  if (!supabase) {
+    console.warn("[feed] Supabase not configured: VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY are missing from this build. Showing seed posts.");
+    return SEED_POSTS;
+  }
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("posts").select("*")
       .eq("status", "published")
       .order("created_at", { ascending: false })
       .limit(40);
+    if (error) {
+      console.error("[feed] Supabase read failed:", error.message || error);
+      return SEED_POSTS;
+    }
     const db = (data || []).map((r) => ({ ...r, time: timeAgo(r.created_at) }));
-    // When the database only has a few live posts, top up with the evergreen
-    // seed posts so the feed always looks full (in prod and in local dev alike).
-    if (db.length >= 6) return db;
-    return [...db, ...SEED_POSTS];
-  } catch {
+    // Show the live posts whenever there are any. The seed posts are only a
+    // fallback for when the table is genuinely empty (or in local dev with no env).
+    return db.length ? db : SEED_POSTS;
+  } catch (e) {
+    console.error("[feed] Supabase request threw:", e);
     return SEED_POSTS;
   }
 }
@@ -326,7 +333,7 @@ export default function App() {
                 <text x="91" y="55" fontFamily="Poppins, 'Segoe UI', system-ui, sans-serif" fontWeight="400" fontSize="9.5" letterSpacing="3.2" fill="#7c88a8">ENGINEERING · OPEN BANKING</text>
               </svg>
             </div>
-            <p className="eyebrow">Open Banking · Embedded Finance · AI-led delivery</p>
+            <p className="eyebrow">Open Banking · Embedded Finance · Digital Transformation · AI-led delivery</p>
             <h1>
               I build the rails that move money between banks, fintechs,
               and the <span className="glow">apps people use every day.</span>
