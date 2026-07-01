@@ -1,0 +1,31 @@
+<svg viewBox="0 0 340 72" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aon Hassan">
+  <defs>
+    <linearGradient id="s3" x1="11" y1="49" x2="54" y2="15" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3E8BFF"/>
+      <stop offset="1" stop-color="#9AD0FF"/>
+    </linearGradient>
+    <radialGradient id="t3" cx="50%" cy="36%" r="72%">
+      <stop offset="0" stop-color="#14264A"/>
+      <stop offset="1" stop-color="#080C16"/>
+    </radialGradient>
+    <filter id="g3" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <g transform="translate(8,4)">
+    <rect x="1.5" y="1.5" width="61" height="61" rx="16" fill="url(#t3)"/>
+    <rect x="1.5" y="1.5" width="61" height="61" rx="16" fill="none" stroke="#4E96FF" stroke-opacity="0.30"/>
+    <g fill="none" stroke="url(#s3)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#g3)">
+      <path d="M22 15 L13 49 M22 15 L31 49"/>
+      <path d="M37 15 V49 M53 15 V49"/>
+      <path d="M11 33 H55"/>
+    </g>
+    <circle cx="55" cy="33" r="5.4" fill="#4E96FF" opacity="0.35" filter="url(#g3)"/>
+    <circle cx="55" cy="33" r="3.1" fill="#EAF6FF" filter="url(#g3)"/>
+  </g>
+
+  <text x="90" y="38" font-family="Poppins, 'Segoe UI', system-ui, sans-serif" font-weight="300" font-size="27" letter-spacing="0.5" fill="#EAF0FF">Aon Hassan</text>
+  <text x="91" y="55" font-family="Poppins, 'Segoe UI', system-ui, sans-serif" font-weight="400" font-size="9.5" letter-spacing="3.2" fill="#7c88a8">ENGINEERING · OPEN BANKING</text>
+</svg>

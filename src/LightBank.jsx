@@ -64,7 +64,7 @@ const PIC = {
 const Prof = () => (<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#cdd8f5" strokeWidth="1.5"><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></svg>);
 const BackArrow = () => (<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EAF0FF" strokeWidth="1.6"><path d="m15 18-6-6 6-6" /></svg>);
 
-export function LightBank() {
+export function LightBank({ scale = 1 }) {
   const [screen, setScreen] = useState("faceid");
   const [unlocked, setUnlocked] = useState(false);
   const [accIdx, setAccIdx] = useState(0);
@@ -91,7 +91,7 @@ export function LightBank() {
   const navOn = (s) => screen === s;
 
   return (
-    <div className="lb">
+    <div className="lb" style={{ zoom: scale }}>
       <style>{LB_CSS}</style>
       <div className="cap">light bank · concept prototype</div>
       <div className="phone">
@@ -269,6 +269,18 @@ export function LightBank() {
 }
 
 export function LightBankPage({ onBack }) {
+  const [scale, setScale] = useState(1);
+  useEffect(() => {
+    const fit = () => {
+      const availH = window.innerHeight - 120;
+      const availW = Math.min(window.innerWidth - 48, 470);
+      const s = Math.max(0.5, Math.min(1, availH / 910, availW / 390));
+      setScale(Math.round(s * 1000) / 1000);
+    };
+    fit();
+    window.addEventListener("resize", fit);
+    return () => window.removeEventListener("resize", fit);
+  }, []);
   return (
     <div className="lbpage">
       <style>{LB_CSS}</style>
@@ -301,7 +313,7 @@ export function LightBankPage({ onBack }) {
             Built as an original interaction study. The car visual and card map are my own stand-ins rather than copied assets.
           </p>
         </div>
-        <div className="lbpage-embed"><LightBank /></div>
+        <div className="lbpage-embed"><LightBank scale={scale} /></div>
       </div>
     </div>
   );

@@ -279,6 +279,35 @@ export default function App() {
           <motion.div className="hero-copy"
             initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.2, 0.7, 0.2, 1] }}>
+            <div className="hero-brand">
+              <svg viewBox="0 0 340 72" role="img" aria-label="Aon Hassan">
+                <defs>
+                  <linearGradient id="s3" x1="11" y1="49" x2="54" y2="15" gradientUnits="userSpaceOnUse">
+                    <stop offset="0" stopColor="#3E8BFF" /><stop offset="1" stopColor="#9AD0FF" />
+                  </linearGradient>
+                  <radialGradient id="t3" cx="50%" cy="36%" r="72%">
+                    <stop offset="0" stopColor="#14264A" /><stop offset="1" stopColor="#080C16" />
+                  </radialGradient>
+                  <filter id="g3" x="-60%" y="-60%" width="220%" height="220%">
+                    <feGaussianBlur stdDeviation="2.2" result="b" />
+                    <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+                  </filter>
+                </defs>
+                <g transform="translate(8,4)">
+                  <rect x="1.5" y="1.5" width="61" height="61" rx="16" fill="url(#t3)" />
+                  <rect x="1.5" y="1.5" width="61" height="61" rx="16" fill="none" stroke="#4E96FF" strokeOpacity="0.30" />
+                  <g fill="none" stroke="url(#s3)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" filter="url(#g3)">
+                    <path d="M22 15 L13 49 M22 15 L31 49" />
+                    <path d="M37 15 V49 M53 15 V49" />
+                    <path d="M11 33 H55" />
+                  </g>
+                  <circle cx="55" cy="33" r="5.4" fill="#4E96FF" opacity="0.35" filter="url(#g3)" />
+                  <circle cx="55" cy="33" r="3.1" fill="#EAF6FF" filter="url(#g3)" />
+                </g>
+                <text x="90" y="38" fontFamily="Poppins, 'Segoe UI', system-ui, sans-serif" fontWeight="300" fontSize="27" letterSpacing="0.5" fill="#EAF0FF">Aon Hassan</text>
+                <text x="91" y="55" fontFamily="Poppins, 'Segoe UI', system-ui, sans-serif" fontWeight="400" fontSize="9.5" letterSpacing="3.2" fill="#7c88a8">ENGINEERING · OPEN BANKING</text>
+              </svg>
+            </div>
             <p className="eyebrow">Open Banking · Embedded Finance · AI-led delivery</p>
             <h1>
               I build the rails that move money between banks, fintechs,
@@ -347,13 +376,13 @@ export default function App() {
 
         <section className="stats">
           {[
-            ["20+", "years in fintech"],
-            ["5", "digital banks delivered"],
-            ["$20M+", "revenue and new business"],
-            ["70+", "engineers and PMs led"],
-            ["3", "central banks: CBUAE, SAMA, CBB"],
-          ].map(([n, l], i) => (
-            <motion.div key={l} className="stat"
+            ["20+", "years in fintech", "#4E96FF"],
+            ["5", "digital banks delivered", "#A855F7"],
+            ["$20M+", "revenue and new business", "#E9B44C"],
+            ["70+", "engineers and PMs led", "#34D399"],
+            ["3", "central banks: CBUAE, SAMA, CBB", "#F472B6"],
+          ].map(([n, l, c], i) => (
+            <motion.div key={l} className="stat" style={{ "--sc": c }}
               initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08 }}>
               <span className="stat-n">{n}</span>
@@ -547,7 +576,7 @@ const CSS = `
   --glass:rgba(255,255,255,.03); --glassbrd:rgba(255,255,255,.08);
   background:var(--bg); color:var(--text);
   font-family:'Poppins',system-ui,sans-serif; font-weight:300; line-height:1.6;
-  -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden; box-sizing:border-box;
 }
 .ah *{box-sizing:border-box;}
 .ah h1,.ah h2,.ah h3,.ah h4{font-weight:300; margin:0; letter-spacing:-.005em; line-height:1.15;}
@@ -581,10 +610,11 @@ const CSS = `
   border-color:rgba(78,150,255,.6); box-shadow:0 0 24px rgba(78,150,255,.4), inset 0 0 16px rgba(78,150,255,.15);}
 .ah .side-item.on .si-icon{color:#8ec5ff; filter:drop-shadow(0 0 6px #4E96FF);}
 /* the glow that spills into the page from the active item */
-.ah .si-glow{position:absolute; left:calc(100% + 4px); top:50%; transform:translateY(-50%) scale(.7); width:300px; height:230px;
-  pointer-events:none; opacity:0; transition:opacity .35s ease, transform .35s ease;
-  background:radial-gradient(circle at left center, rgba(78,150,255,.34), rgba(120,90,255,.14) 42%, transparent 70%);}
-.ah .side-item.on .si-glow{opacity:1; transform:translateY(-50%) scale(1);}
+.ah .si-glow{position:absolute; top:50%; left:100%; width:300px; height:210px;
+  transform:translate(-42%,-50%) scale(.72); pointer-events:none; opacity:0; filter:blur(30px);
+  background:radial-gradient(closest-side, rgba(78,150,255,.32), rgba(120,90,255,.10) 55%, transparent);
+  transition:opacity .45s ease, transform .45s ease;}
+.ah .side-item.on .si-glow{opacity:1; transform:translate(-42%,-50%) scale(1);}
 .ah .side-cta{color:#cfe2ff; background:rgba(78,150,255,.1); border-color:rgba(78,150,255,.4);}
 .ah .side-cta:hover{background:rgba(78,150,255,.18); color:#cfe2ff;}
 
@@ -600,6 +630,8 @@ const CSS = `
   display:grid; grid-template-columns:1.25fr .9fr; gap:48px; align-items:center;}
 .ah .hero::before{content:""; position:absolute; top:-40px; left:20%; width:520px; height:420px; z-index:-1;
   background:radial-gradient(circle, rgba(78,150,255,.18), transparent 68%); filter:blur(20px);}
+.ah .hero-brand{margin-bottom:24px;}
+.ah .hero-brand svg{width:330px; max-width:82%; height:auto; display:block;}
 .ah .eyebrow{font-size:12px; letter-spacing:.06em; color:var(--blue2); text-transform:uppercase; margin:0 0 22px; font-weight:400;}
 .ah .hero h1{font-size:clamp(2.3rem,5vw,3.9rem); font-weight:200; letter-spacing:-.01em;}
 .ah .lede{margin:24px 0 0; max-width:48ch; color:var(--muted); font-size:16px; font-weight:300;}
@@ -616,7 +648,7 @@ const CSS = `
 /* STATS */
 .ah .stats{max-width:1160px; margin:0 auto; display:grid; grid-template-columns:repeat(5,1fr);
   gap:1px; background:var(--line); border:1px solid var(--line); border-radius:16px; overflow:hidden;}
-.ah .stat{background:#080C16; padding:26px 20px; display:flex; flex-direction:column; gap:8px;}
+.ah .stat{background:#080C16; padding:26px 20px; display:flex; flex-direction:column; gap:8px; position:relative;}
 .ah .stat-n{font-size:34px; font-weight:200; color:#EAF0FF; text-shadow:0 0 20px rgba(78,150,255,.45); line-height:1;}
 .ah .stat-l{font-size:11px; color:var(--muted); line-height:1.4;}
 
@@ -707,8 +739,25 @@ const CSS = `
 .ah .copyright{margin-top:42px; font-size:11px; color:var(--faint);}
 
 @media (min-width:1024px){
-  .ah > main{padding-left:196px;}
-  .ah > footer.contact{margin-left:-196px; padding-left:calc(24px + 196px);}
+  .ah{padding-left:196px;}
+}
+@media (min-width:1200px){
+  .ah{padding-right:214px;}
+  .ah .stats{position:fixed; right:22px; top:50%; transform:translateY(-50%); z-index:40;
+    max-width:none; width:196px; margin:0; display:flex; flex-direction:column; gap:6px; padding:12px;
+    background:rgba(8,12,22,.62); backdrop-filter:blur(16px); border:1px solid var(--glassbrd); border-radius:20px;
+    box-shadow:0 24px 60px -26px rgba(0,0,0,.85), 0 0 34px -14px rgba(78,150,255,.22); overflow:visible;}
+  .ah .stat{background:rgba(255,255,255,.015); padding:12px 14px; border-radius:13px; border:1px solid transparent; gap:4px;
+    transition:border .25s, box-shadow .25s, background .25s;}
+  .ah .stat-n{font-size:27px; transition:text-shadow .25s, color .25s;}
+  .ah .stat-l{font-size:10px;}
+  .ah .stat:hover{border-color:var(--sc); background:rgba(255,255,255,.045);
+    box-shadow:0 0 26px -6px var(--sc), inset 0 0 18px -9px var(--sc);}
+  .ah .stat:hover .stat-n{color:#fff; text-shadow:0 0 18px var(--sc);}
+  .ah .stat::after{content:""; position:absolute; top:50%; right:100%; width:250px; height:150px;
+    transform:translateY(-50%) scale(.7); pointer-events:none; opacity:0; filter:blur(30px);
+    background:radial-gradient(closest-side, var(--sc), transparent); transition:opacity .4s ease, transform .4s ease;}
+  .ah .stat:hover::after{opacity:0.42; transform:translateY(-50%) scale(1);}
 }
 @media (max-width:1023px){
   .ah .sidenav{left:50%; right:auto; top:auto; bottom:16px; transform:translateX(-50%);
