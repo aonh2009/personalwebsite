@@ -1,9 +1,10 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import {
   Heart, MessageCircle, Repeat2, Share2, ArrowUpRight,
   ShieldCheck, Mail, Phone, MapPin, Globe, BadgeCheck, Radio,
   Briefcase, Layers, LayoutGrid, AtSign,
+  ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import { LightBankPage } from "./LightBank";
@@ -99,8 +100,11 @@ async function loadPosts() {
       .eq("status", "published")
       .order("created_at", { ascending: false })
       .limit(40);
-    if (!data || !data.length) return SEED_POSTS;
-    return data.map((r) => ({ ...r, time: timeAgo(r.created_at) }));
+    const db = (data || []).map((r) => ({ ...r, time: timeAgo(r.created_at) }));
+    // When the database only has a few live posts, top up with the evergreen
+    // seed posts so the feed always looks full (in prod and in local dev alike).
+    if (db.length >= 6) return db;
+    return [...db, ...SEED_POSTS];
   } catch {
     return SEED_POSTS;
   }
@@ -171,14 +175,16 @@ function MovingBackground({ reduce }) {
   );
 }
 
-function FloatCard({ children, className, index = 0, reduce }) {
+function FloatCard({ children, className, wrapClass = "", index = 0, reduce, eager = false }) {
   const dur = 5 + (index % 4) * 0.8;
   const delay = (index % 5) * 0.22;
+  const entrance = eager
+    ? { initial: { opacity: 0, y: 22 }, animate: { opacity: 1, y: 0 } }
+    : { initial: { opacity: 0, y: 40 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-40px" } };
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
+      className={wrapClass}
+      {...entrance}
       transition={{ duration: 0.6, ease: [0.2, 0.7, 0.2, 1] }}
       whileHover={reduce ? undefined : { y: -10, transition: { duration: 0.3 } }}
     >
@@ -221,16 +227,28 @@ export default function App() {
     return () => obs.disconnect();
   }, [view]);
 
-  if (view === "lightbank") {
-    return <LightBankPage onBack={() => { window.location.hash = ""; }} />;
-  }
-
   const shown = useMemo(
     () => (filter === "all" ? posts : posts.filter((p) => p.cat === filter)),
     [filter, posts]
   );
 
   const tabs = [["all", "All"], ...Object.entries(CATEGORIES).map(([k, v]) => [k, v.label])];
+
+  const feedRef = useRef(null);
+  const scrollFeed = (dir) => {
+    const el = feedRef.current;
+    if (!el) return;
+    const card = el.querySelector(".feed-slide");
+    const step = card ? card.offsetWidth + 18 : 320;
+    el.scrollBy({ left: dir * step, behavior: "smooth" });
+  };
+
+  if (view === "lightbank") {
+    return <LightBankPage onBack={() => {
+      setView("site");
+      if (window.location.hash) history.replaceState(null, "", window.location.pathname + window.location.search);
+    }} />;
+  }
 
   return (
     <div className="ah">
@@ -409,33 +427,41 @@ export default function App() {
             ))}
           </div>
 
-          <div className="cards">
-            {shown.map((p, i) => {
-              const cat = CATEGORIES[p.cat] || CATEGORIES.news;
-              return (
-                <FloatCard key={p.id} className="card" index={i} reduce={reduce}>
-                  <div className="card-top">
-                    <span className="avatar">AH</span>
-                    <div className="who">
-                      <span className="who-name">Aon Hassan <BadgeCheck size={15} className="verified" /></span>
-                      <span className="who-role">VP Engineering · Open Banking · Riyadh</span>
-                      <span className="who-meta">
-                        {p.time} · <i style={{ color: cat.color, textShadow: `0 0 8px ${cat.color}` }}>● </i>{cat.label}
-                      </span>
+          <div className="feed-carousel">
+            <button className="car-nav prev" aria-label="Previous" onClick={() => scrollFeed(-1)}>
+              <ChevronLeft size={20} />
+            </button>
+            <div className="cards" ref={feedRef}>
+              {shown.map((p, i) => {
+                const cat = CATEGORIES[p.cat] || CATEGORIES.news;
+                return (
+                  <FloatCard key={p.id} className="card" wrapClass="feed-slide" eager index={i} reduce={reduce}>
+                    <div className="card-top">
+                      <span className="avatar">AH</span>
+                      <div className="who">
+                        <span className="who-name">Aon Hassan <BadgeCheck size={15} className="verified" /></span>
+                        <span className="who-role">VP Engineering · Open Banking · Riyadh</span>
+                        <span className="who-meta">
+                          {p.time} · <i style={{ color: cat.color, textShadow: `0 0 8px ${cat.color}` }}>● </i>{cat.label}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <h3 className="card-title">{p.title}</h3>
-                  <p className="card-body">{p.body}</p>
-                  <div className="card-cover"><CoverArt cat={CATEGORIES[p.cat] ? p.cat : "news"} /></div>
-                  <div className="card-actions">
-                    <button><Heart size={16} /> {p.likes}</button>
-                    <button><MessageCircle size={16} /> {p.comments}</button>
-                    <button><Repeat2 size={16} /> {p.reposts}</button>
-                    <button className="share"><Share2 size={16} /> Share</button>
-                  </div>
-                </FloatCard>
-              );
-            })}
+                    <h3 className="card-title">{p.title}</h3>
+                    <p className="card-body">{p.body}</p>
+                    <div className="card-cover"><CoverArt cat={CATEGORIES[p.cat] ? p.cat : "news"} /></div>
+                    <div className="card-actions">
+                      <button><Heart size={16} /> {p.likes}</button>
+                      <button><MessageCircle size={16} /> {p.comments}</button>
+                      <button><Repeat2 size={16} /> {p.reposts}</button>
+                      <button className="share"><Share2 size={16} /> Share</button>
+                    </div>
+                  </FloatCard>
+                );
+              })}
+            </div>
+            <button className="car-nav next" aria-label="Next" onClick={() => scrollFeed(1)}>
+              <ChevronRight size={20} />
+            </button>
           </div>
         </section>
 
@@ -537,7 +563,7 @@ export default function App() {
                   recolors as you switch accounts, a send-money flow, and a product configurator. Rebuilt in React
                   from the ground up, micro-interactions and all.
                 </p>
-                <motion.button className="btn btn-solid" onClick={() => { window.location.hash = "light-bank"; }}
+                <motion.button className="btn btn-solid" onClick={() => { setView("lightbank"); window.location.hash = "light-bank"; }}
                   whileHover={reduce ? undefined : { scale: 1.04 }} whileTap={{ scale: 0.97 }}>
                   View prototype <ArrowUpRight size={16} />
                 </motion.button>
@@ -653,7 +679,7 @@ const CSS = `
 .ah .stat-l{font-size:11px; color:var(--muted); line-height:1.4;}
 
 /* FEED */
-.ah .feed{max-width:680px; margin:0 auto; padding-top:84px;}
+.ah .feed{max-width:1040px; margin:0 auto; padding-top:84px;}
 .ah .feed-head{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;}
 .ah .feed h2,.ah .work h2,.ah .stack h2{font-size:clamp(1.7rem,3vw,2.3rem); font-weight:200;}
 .ah .sub{font-size:12.5px; color:var(--muted); margin:9px 0 0;}
@@ -665,7 +691,20 @@ const CSS = `
   background:transparent; color:var(--muted); cursor:pointer; transition:.2s; font-family:'Poppins'; font-weight:300;}
 .ah .tab:hover{border-color:var(--blue); color:var(--blue2);}
 .ah .tab.on{background:rgba(78,150,255,.16); color:#EAF0FF; border-color:rgba(78,150,255,.6); box-shadow:0 0 16px rgba(78,150,255,.3);}
-.ah .cards{display:flex; flex-direction:column; gap:18px;}
+.ah .feed-carousel{position:relative; margin-top:6px;}
+.ah .cards{--per:3; display:flex; flex-direction:row; gap:18px; overflow-x:auto; scroll-snap-type:x mandatory;
+  scroll-behavior:smooth; padding:14px 2px 20px; scrollbar-width:none;}
+.ah .cards::-webkit-scrollbar{display:none;}
+.ah .feed-slide{flex:0 0 calc((100% - (var(--per) - 1) * 18px) / var(--per)); min-width:0; scroll-snap-align:start;}
+.ah .feed-slide .card{height:100%;}
+.ah .car-nav{position:absolute; top:50%; transform:translateY(-50%); z-index:6; width:42px; height:42px; border-radius:50%;
+  display:grid; place-items:center; cursor:pointer; color:#cfe2ff; background:rgba(8,12,22,.82); backdrop-filter:blur(12px);
+  border:1px solid rgba(78,150,255,.45); box-shadow:0 0 20px rgba(78,150,255,.32); transition:.2s;}
+.ah .car-nav:hover{background:rgba(78,150,255,.22); box-shadow:0 0 28px rgba(78,150,255,.5); color:#fff;}
+.ah .car-nav.prev{left:-6px;}
+.ah .car-nav.next{right:-6px;}
+@media (max-width:1080px){ .ah .cards{--per:2;} }
+@media (max-width:680px){ .ah .cards{--per:1;} .ah .car-nav.prev{left:2px;} .ah .car-nav.next{right:2px;} }
 .ah .card{background:var(--glass); border:1px solid var(--glassbrd); border-radius:18px; padding:20px 20px 8px; transition:border .25s, box-shadow .25s; backdrop-filter:blur(6px); box-shadow:0 26px 54px -30px rgba(0,0,0,.9), 0 8px 20px -14px rgba(0,0,0,.6);}
 .ah .card:hover{border-color:rgba(78,150,255,.5); box-shadow:0 34px 66px -26px rgba(0,0,0,.95), 0 0 46px -12px rgba(78,150,255,.45);}
 .ah .card-top{display:flex; gap:12px; align-items:center;}

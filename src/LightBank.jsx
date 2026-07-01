@@ -72,6 +72,8 @@ export function LightBank({ scale = 1 }) {
   const [amt, setAmt] = useState("10.00");
   const [toIdx, setToIdx] = useState(3);
   const [carM, setCarM] = useState(1284);
+  const [arcColor, setArcColor] = useState(ACCOUNTS[0].c);
+  const [sweep, setSweep] = useState(0);
   const startX = useRef(0);
 
   const acc = ACCOUNTS[accIdx];
@@ -82,8 +84,10 @@ export function LightBank({ scale = 1 }) {
   useEffect(() => {
     if (!unlocked) return;
     setPulse(true);
-    const t = setTimeout(() => setPulse(false), 700);
-    return () => clearTimeout(t);
+    setSweep((s) => s + 1);
+    const t1 = setTimeout(() => setPulse(false), 700);
+    const t2 = setTimeout(() => setArcColor(ACCOUNTS[accIdx].c), 800);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [accIdx, unlocked]);
 
   const go = (id) => setScreen(id);
@@ -126,8 +130,8 @@ export function LightBank({ scale = 1 }) {
           }}>
           <div className="topbar"><span /><div className="prof"><Prof /></div></div>
           <div className="ringwrap">
-            <div className={"ring" + (pulse ? " pulse" : "")} style={{ "--c": acc.c, "--glow": acc.glow }}>
-              <svg className="spinner" viewBox="0 0 300 300">
+            <div className={"ring" + (pulse ? " pulse" : "")} style={{ "--c": arcColor, "--glow": acc.glow }}>
+              <svg key={sweep} className="spinner" viewBox="0 0 300 300">
                 <circle cx="150" cy="150" r="128" fill="none" stroke="rgba(255,255,255,.14)" strokeWidth="1.5" />
                 <circle className="arc" cx="150" cy="150" r="128" fill="none" stroke="var(--c)" strokeWidth="2.6" strokeLinecap="round" strokeDasharray="130 675" />
               </svg>
@@ -357,8 +361,8 @@ const LB_CSS = `
 @keyframes lbfloat{0%,100%{transform:translateY(0) rotate(0);} 50%{transform:translateY(-9px) rotate(.5deg);}}
 .lb .ring.pulse{animation:lbfloat 6s ease-in-out infinite, lbpulse .7s ease;}
 @keyframes lbpulse{0%{transform:scale(.93);} 55%{transform:scale(1.04);} 100%{transform:scale(1);}}
-.lb .ring .spinner{position:absolute; inset:0; width:100%; height:100%; animation:lbspin 9s linear infinite;}
-@keyframes lbspin{to{transform:rotate(360deg);}}
+.lb .ring .spinner{position:absolute; inset:0; width:100%; height:100%; transform-origin:center; animation:lbsweep .8s cubic-bezier(.35,0,.2,1);}
+@keyframes lbsweep{from{transform:rotate(0deg);} to{transform:rotate(360deg);}}
 .lb .ring .arc{filter:drop-shadow(0 0 5px var(--c)) drop-shadow(0 0 13px var(--c)); transition:stroke .5s ease;}
 .lb .ring .center{text-align:center; z-index:2;}
 .lb .ring .lbl{font-weight:300; font-size:13px; color:#9fb0d6; margin-bottom:6px;}
