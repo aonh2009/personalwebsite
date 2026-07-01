@@ -3,5 +3,6 @@ html, body, #root {
   min-height: 100%;
 }
 body {
-  background: #F5F3EE;
+  background: #05070E;
+  color-scheme: dark;
 }

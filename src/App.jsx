@@ -6,19 +6,18 @@ import {
 import { supabase } from "./supabaseClient";
 
 /*
-  Aon Hassan, personal site + LinkedIn-style feed.
-  Reads posts live from Supabase. Falls back to the seed array below when the
-  backend is not connected yet, so the page never renders empty.
-  The daily job (supabase/functions/daily-post) is what writes new posts.
+  Aon Hassan, personal site. Dark neon direction.
+  Reads posts live from Supabase, falls back to the seed array so the page never renders empty.
+  The daily job (supabase/functions/daily-post) writes new posts.
 */
 
 const CATEGORIES = {
-  ob:   { label: "Open Banking",     color: "#15B7A6" },
-  ef:   { label: "Embedded Finance", color: "#6C5CE7" },
-  ai:   { label: "AI / GenAI",       color: "#E0A33E" },
-  news: { label: "Industry",         color: "#3B82F6" },
-  tech: { label: "Tech Notes",       color: "#2E9E6B" },
-  lead: { label: "Leadership",       color: "#E0668A" },
+  ob:   { label: "Open Banking",     color: "#4E96FF" },
+  ef:   { label: "Embedded Finance", color: "#A855F7" },
+  ai:   { label: "AI / GenAI",       color: "#E9B44C" },
+  news: { label: "Industry",         color: "#38BDF8" },
+  tech: { label: "Tech Notes",       color: "#34D399" },
+  lead: { label: "Leadership",       color: "#F472B6" },
 };
 
 const SEED_POSTS = [
@@ -107,26 +106,27 @@ async function loadPosts() {
 function CoverArt({ cat }) {
   const c = CATEGORIES[cat].color;
   return (
-    <svg className="cover" viewBox="0 0 640 220" preserveAspectRatio="xMidYMid slice" role="img" aria-hidden="true">
+    <svg className="cover" viewBox="0 0 640 200" preserveAspectRatio="xMidYMid slice" role="img" aria-hidden="true">
       <defs>
         <linearGradient id={`g-${cat}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor={c} stopOpacity="0.22" />
-          <stop offset="1" stopColor="#0A111E" stopOpacity="0.9" />
+          <stop offset="0" stopColor={c} stopOpacity="0.26" />
+          <stop offset="1" stopColor="#05070E" stopOpacity="0.95" />
         </linearGradient>
       </defs>
-      <rect width="640" height="220" fill="#0A111E" />
-      <rect width="640" height="220" fill={`url(#g-${cat})`} />
-      {[...Array(7)].map((_, i) => (
-        <line key={i} x1="0" y1={26 + i * 28} x2="640" y2={26 + i * 28}
-          stroke={c} strokeOpacity="0.10" strokeWidth="1" />
+      <rect width="640" height="200" fill="#070B14" />
+      <rect width="640" height="200" fill={`url(#g-${cat})`} />
+      {[...Array(6)].map((_, i) => (
+        <line key={i} x1="0" y1={26 + i * 30} x2="640" y2={26 + i * 30} stroke={c} strokeOpacity="0.08" strokeWidth="1" />
       ))}
-      <circle cx="120" cy="110" r="7" fill={c} />
-      <circle cx="320" cy="70"  r="5" fill={c} fillOpacity="0.7" />
-      <circle cx="520" cy="150" r="9" fill={c} />
-      <path d="M120 110 C 220 110, 240 70, 320 70 S 440 150, 520 150"
-        fill="none" stroke={c} strokeWidth="2" strokeOpacity="0.65" strokeDasharray="2 8" strokeLinecap="round" />
-      <text x="28" y="200" fill={c} fillOpacity="0.85"
-        style={{ font: "600 13px 'IBM Plex Mono', monospace", letterSpacing: "0.12em" }}>
+      <g style={{ filter: `drop-shadow(0 0 6px ${c})` }}>
+        <circle cx="120" cy="104" r="6" fill={c} />
+        <circle cx="330" cy="66"  r="4" fill={c} fillOpacity="0.8" />
+        <circle cx="520" cy="140" r="8" fill={c} />
+        <path d="M120 104 C 220 104, 250 66, 330 66 S 440 140, 520 140"
+          fill="none" stroke={c} strokeWidth="2" strokeOpacity="0.8" strokeDasharray="2 8" strokeLinecap="round" />
+      </g>
+      <text x="28" y="178" fill={c} fillOpacity="0.9"
+        style={{ font: "500 12px 'Poppins', sans-serif", letterSpacing: "0.18em" }}>
         {CATEGORIES[cat].label.toUpperCase()}
       </text>
     </svg>
@@ -152,13 +152,13 @@ export default function App() {
 
       <header className="nav">
         <a href="#top" className="brand">
-          <span className="mono brand-mark">AH</span>
+          <span className="brand-mark">AH<i className="spark" /></span>
           <span className="brand-text">
             <strong>Aon Hassan</strong>
-            <em className="mono">VP / C-Level Engineering &amp; Product</em>
+            <em>VP / C-Level Engineering &amp; Product</em>
           </span>
         </a>
-        <nav className="nav-links mono">
+        <nav className="nav-links">
           <a href="#feed">Feed</a>
           <a href="#work">Work</a>
           <a href="#stack">Stack</a>
@@ -172,17 +172,17 @@ export default function App() {
       <main id="top">
         <section className="hero">
           <div className="hero-copy">
-            <p className="eyebrow mono">Open Banking · Embedded Finance · AI-led delivery</p>
+            <p className="eyebrow">Open Banking · Embedded Finance · AI-led delivery</p>
             <h1>
               I build the rails that move money between banks, fintechs,
-              and the apps people use every day.
+              and the <span className="glow">apps people use every day.</span>
             </h1>
             <p className="lede">
               Twenty years turning product vision into regulated, live banking across the GCC.
               Five digital banks delivered end to end, conventional and Islamic, retail and corporate,
               now leading engineering and product at MENA&apos;s leading open banking platform.
             </p>
-            <div className="pills mono">
+            <div className="pills">
               <span>MSc Finance · LSE</span>
               <span>BSc Computer Science · Western</span>
               <span>PfMP®</span>
@@ -202,38 +202,33 @@ export default function App() {
             <svg viewBox="0 0 360 360">
               <defs>
                 <linearGradient id="flow" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stopColor="#15B7A6" />
-                  <stop offset="1" stopColor="#6C5CE7" />
+                  <stop offset="0" stopColor="#4E96FF" />
+                  <stop offset="1" stopColor="#A855F7" />
                 </linearGradient>
               </defs>
+              <circle cx="180" cy="180" r="150" fill="none" stroke="rgba(78,150,255,.12)" strokeWidth="1" />
               {[70, 150, 230, 310].map((y) => (
-                <g key={`l${y}`}>
-                  <rect x="20" y={y - 16} width="64" height="32" rx="7"
-                    fill="#0F1A2B" stroke="#15B7A6" strokeOpacity="0.5" />
-                  <text x="52" y={y + 4} textAnchor="middle"
-                    style={{ font: "500 11px 'IBM Plex Mono',monospace" }} fill="#8FA0B8">BANK</text>
+                <g key={`l${y}`} style={{ filter: "drop-shadow(0 0 4px rgba(78,150,255,.5))" }}>
+                  <rect x="18" y={y - 16} width="66" height="32" rx="8" fill="#0A1120" stroke="#4E96FF" strokeOpacity="0.55" />
+                  <text x="51" y={y + 4} textAnchor="middle" style={{ font: "300 11px 'Poppins'" }} fill="#8ea3cf">BANK</text>
                 </g>
               ))}
               {[110, 250].map((y) => (
-                <g key={`r${y}`}>
-                  <rect x="276" y={y - 18} width="64" height="36" rx="7"
-                    fill="#0F1A2B" stroke="#6C5CE7" strokeOpacity="0.55" />
-                  <text x="308" y={y + 4} textAnchor="middle"
-                    style={{ font: "500 11px 'IBM Plex Mono',monospace" }} fill="#8FA0B8">APP</text>
+                <g key={`r${y}`} style={{ filter: "drop-shadow(0 0 4px rgba(168,85,247,.55))" }}>
+                  <rect x="276" y={y - 18} width="66" height="36" rx="8" fill="#0A1120" stroke="#A855F7" strokeOpacity="0.6" />
+                  <text x="309" y={y + 4} textAnchor="middle" style={{ font: "300 11px 'Poppins'" }} fill="#8ea3cf">APP</text>
                 </g>
               ))}
-              <circle cx="180" cy="180" r="30" fill="url(#flow)" fillOpacity="0.16"
-                stroke="url(#flow)" strokeWidth="1.5" />
-              <text x="180" y="184" textAnchor="middle"
-                style={{ font: "600 12px 'IBM Plex Mono',monospace" }} fill="#E8EDF5">API</text>
+              <circle cx="180" cy="180" r="30" fill="url(#flow)" fillOpacity="0.14" stroke="url(#flow)" strokeWidth="1.5"
+                style={{ filter: "drop-shadow(0 0 10px rgba(78,150,255,.5))" }} />
+              <text x="180" y="184" textAnchor="middle" style={{ font: "400 12px 'Poppins'" }} fill="#EAF0FF">API</text>
               {[
                 "M84 70 C150 70 150 180 180 180", "M84 150 C150 150 150 180 180 180",
                 "M84 230 C150 230 150 180 180 180", "M84 310 C150 310 150 180 180 180",
                 "M180 180 C210 180 210 110 276 110", "M180 180 C210 180 210 250 276 250",
               ].map((d, i) => (
-                <path key={i} d={d} fill="none" stroke="url(#flow)" strokeWidth="1.6"
-                  strokeOpacity="0.5" strokeDasharray="3 7" className="flow-path"
-                  style={{ animationDelay: `${i * 0.4}s` }} />
+                <path key={i} d={d} fill="none" stroke="url(#flow)" strokeWidth="1.6" strokeOpacity="0.6"
+                  strokeDasharray="3 7" className="flow-path" style={{ animationDelay: `${i * 0.4}s` }} />
               ))}
             </svg>
           </div>
@@ -249,7 +244,7 @@ export default function App() {
           ].map(([n, l]) => (
             <div key={l} className="stat">
               <span className="stat-n">{n}</span>
-              <span className="stat-l mono">{l}</span>
+              <span className="stat-l">{l}</span>
             </div>
           ))}
         </section>
@@ -258,12 +253,12 @@ export default function App() {
           <div className="feed-head">
             <div>
               <h2>The Feed</h2>
-              <p className="mono sub">Daily notes on open banking, embedded finance, and shipping with AI.</p>
+              <p className="sub">Daily notes on open banking, embedded finance, and shipping with AI.</p>
             </div>
-            <span className="live mono"><Radio size={13} /> Updated daily</span>
+            <span className="live"><Radio size={13} /> Updated daily</span>
           </div>
 
-          <div className="tabs mono" role="tablist">
+          <div className="tabs" role="tablist">
             {tabs.map(([k, label]) => (
               <button key={k} className={`tab ${filter === k ? "on" : ""}`}
                 onClick={() => setFilter(k)} role="tab" aria-selected={filter === k}>
@@ -280,19 +275,17 @@ export default function App() {
                   <div className="card-top">
                     <span className="avatar">AH</span>
                     <div className="who">
-                      <span className="who-name">
-                        Aon Hassan <BadgeCheck size={15} className="verified" />
-                      </span>
-                      <span className="who-role mono">VP Engineering · Open Banking · Riyadh</span>
-                      <span className="who-meta mono">
-                        {p.time} · <i style={{ color: cat.color }}>● </i>{cat.label}
+                      <span className="who-name">Aon Hassan <BadgeCheck size={15} className="verified" /></span>
+                      <span className="who-role">VP Engineering · Open Banking · Riyadh</span>
+                      <span className="who-meta">
+                        {p.time} · <i style={{ color: cat.color, textShadow: `0 0 8px ${cat.color}` }}>● </i>{cat.label}
                       </span>
                     </div>
                   </div>
                   <h3 className="card-title">{p.title}</h3>
                   <p className="card-body">{p.body}</p>
                   <div className="card-cover"><CoverArt cat={CATEGORIES[p.cat] ? p.cat : "news"} /></div>
-                  <div className="card-actions mono">
+                  <div className="card-actions">
                     <button><Heart size={16} /> {p.likes}</button>
                     <button><MessageCircle size={16} /> {p.comments}</button>
                     <button><Repeat2 size={16} /> {p.reposts}</button>
@@ -347,9 +340,9 @@ export default function App() {
                 <div className="job-head">
                   <div>
                     <h3>{j.role}</h3>
-                    <p className="job-org">{j.org} <span className="mono">· {j.place}</span></p>
+                    <p className="job-org">{j.org} <span className="place">· {j.place}</span></p>
                   </div>
-                  <span className="job-dates mono">{j.dates}</span>
+                  <span className="job-dates">{j.dates}</span>
                 </div>
                 <ul>{j.bullets.map((b, i) => <li key={i}>{b}</li>)}</ul>
               </li>
@@ -378,8 +371,8 @@ export default function App() {
               ["Delivery", ["Azure DevOps", "Jenkins", "Kubernetes", "OpenShift", "Docker", "Jira"]],
             ].map(([title, items]) => (
               <div key={title} className="stack-col">
-                <h4 className="mono">{title}</h4>
-                <div className="chips">{items.map((c) => <span key={c} className="chip mono">{c}</span>)}</div>
+                <h4>{title}</h4>
+                <div className="chips2">{items.map((c) => <span key={c} className="chip2">{c}</span>)}</div>
               </div>
             ))}
           </div>
@@ -387,11 +380,11 @@ export default function App() {
       </main>
 
       <footer className="contact" id="contact">
-        <h2>Let&apos;s talk.</h2>
+        <h2>Let&apos;s <span className="glow">talk.</span></h2>
         <p className="foot-lede">
           Open to VP and C-level engineering and product leadership in fintech and digital banking.
         </p>
-        <div className="foot-links mono">
+        <div className="foot-links">
           <a href="mailto:aon@aonhassan.com"><Mail size={16} /> aon@aonhassan.com</a>
           <a href="tel:+966509641620"><Phone size={16} /> +966 509 641 620</a>
           <span><MapPin size={16} /> Riyadh, Saudi Arabia</span>
@@ -400,132 +393,148 @@ export default function App() {
         <a href="mailto:aon@aonhassan.com" className="btn btn-solid foot-btn">
           <Mail size={16} /> Email me
         </a>
-        <p className="copyright mono">© {new Date().getFullYear()} Aon Hassan · Built for the people doing the hiring.</p>
+        <p className="copyright">© {new Date().getFullYear()} Aon Hassan · Built for the people doing the hiring.</p>
       </footer>
     </div>
   );
 }
 
 const CSS = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600&display=swap');
 
 .ah{
-  --ink:#0A111E; --ink2:#0F1A2B; --paper:#F5F3EE; --paper2:#EAE6DD;
-  --text:#0C1626; --muted:#55657A; --text-d:#E8EDF5; --muted-d:#8FA0B8;
-  --accent:#15B7A6; --accent-d:#0E8C7F; --line:rgba(12,22,38,.12); --line-d:rgba(255,255,255,.12);
-  background:var(--paper); color:var(--text);
-  font-family:'Inter',system-ui,sans-serif; line-height:1.55; scroll-behavior:smooth;
-  -webkit-font-smoothing:antialiased;
+  --bg:#05070E; --text:#EAF0FF; --muted:#93A1C4; --faint:#5f6c8c;
+  --line:rgba(255,255,255,.08); --blue:#4E96FF; --blue2:#8ec5ff;
+  --glass:rgba(255,255,255,.03); --glassbrd:rgba(255,255,255,.08);
+  background:var(--bg); color:var(--text);
+  font-family:'Poppins',system-ui,sans-serif; font-weight:300; line-height:1.6;
+  -webkit-font-smoothing:antialiased; overflow-x:hidden;
 }
 .ah *{box-sizing:border-box;}
-.ah .mono{font-family:'IBM Plex Mono',monospace;}
-.ah h1,.ah h2,.ah h3,.ah h4{font-family:'Space Grotesk',sans-serif; line-height:1.08; margin:0; letter-spacing:-.01em;}
+.ah h1,.ah h2,.ah h3,.ah h4{font-weight:300; margin:0; letter-spacing:-.005em; line-height:1.15;}
 .ah a{color:inherit; text-decoration:none;}
-.ah section{padding:0 24px;}
+.ah section{padding:0 24px; position:relative;}
+.ah .glow{color:#fff; text-shadow:0 0 20px rgba(78,150,255,.7), 0 0 46px rgba(78,150,255,.4);}
 
+/* NAV */
 .ah .nav{position:sticky; top:0; z-index:30; display:flex; align-items:center; justify-content:space-between;
-  gap:16px; padding:14px 24px; background:rgba(245,243,238,.82); backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--line);}
+  gap:16px; padding:14px 24px; background:rgba(5,7,14,.72); backdrop-filter:blur(14px); border-bottom:1px solid var(--line);}
 .ah .brand{display:flex; align-items:center; gap:11px;}
-.ah .brand-mark{display:grid; place-items:center; width:38px; height:38px; border-radius:9px;
-  background:var(--ink); color:#fff; font-weight:600; font-size:14px; letter-spacing:.04em;}
-.ah .brand-text{display:flex; flex-direction:column; line-height:1.15;}
-.ah .brand-text strong{font-family:'Space Grotesk',sans-serif; font-size:15px;}
+.ah .brand-mark{position:relative; display:grid; place-items:center; width:38px; height:38px; border-radius:10px;
+  background:#0A1120; border:1px solid rgba(78,150,255,.4); color:#EAF0FF; font-weight:400; font-size:13px; letter-spacing:.06em;
+  box-shadow:0 0 16px rgba(78,150,255,.25);}
+.ah .brand-mark .spark{position:absolute; top:6px; right:7px; width:5px; height:5px; border-radius:50%; background:#8ec5ff;
+  box-shadow:0 0 8px #4E96FF,0 0 16px #4E96FF; animation:pulse 2.4s ease-in-out infinite;}
+.ah .brand-text{display:flex; flex-direction:column; line-height:1.2;}
+.ah .brand-text strong{font-weight:400; font-size:15px;}
 .ah .brand-text em{font-style:normal; font-size:10.5px; color:var(--muted); letter-spacing:.02em;}
-.ah .nav-links{display:flex; gap:26px; font-size:13px; color:var(--muted);}
-.ah .nav-links a:hover{color:var(--accent-d);}
-.ah .btn{display:inline-flex; align-items:center; gap:7px; font-size:13.5px; font-weight:500;
-  padding:9px 16px; border-radius:9px; cursor:pointer; border:1px solid transparent; transition:.18s;}
-.ah .btn-solid{background:var(--ink); color:#fff;}
-.ah .btn-solid:hover{background:#16243A; transform:translateY(-1px);}
-.ah .btn-ghost{border-color:var(--line); color:var(--text); background:transparent;}
-.ah .btn-ghost:hover{border-color:var(--accent); color:var(--accent-d);}
+.ah .nav-links{display:flex; gap:28px; font-size:13px; color:var(--muted);}
+.ah .nav-links a{transition:.2s;}
+.ah .nav-links a:hover{color:var(--blue2); text-shadow:0 0 12px rgba(78,150,255,.6);}
+.ah .btn{display:inline-flex; align-items:center; gap:7px; font-size:13.5px; font-weight:400; padding:9px 17px;
+  border-radius:11px; cursor:pointer; border:1px solid transparent; transition:.2s; font-family:'Poppins';}
+.ah .btn-solid{background:rgba(78,150,255,.12); border-color:rgba(78,150,255,.5); color:#cfe2ff; box-shadow:0 0 18px rgba(78,150,255,.25);}
+.ah .btn-solid:hover{background:rgba(78,150,255,.2); box-shadow:0 0 26px rgba(78,150,255,.45); transform:translateY(-1px);}
+.ah .btn-ghost{border-color:var(--glassbrd); color:var(--text); background:transparent;}
+.ah .btn-ghost:hover{border-color:var(--blue); color:var(--blue2);}
 
-.ah .hero{max-width:1160px; margin:0 auto; padding-top:74px; padding-bottom:60px;
+/* HERO */
+.ah .hero{max-width:1160px; margin:0 auto; padding-top:70px; padding-bottom:56px;
   display:grid; grid-template-columns:1.25fr .9fr; gap:48px; align-items:center;}
-.ah .eyebrow{font-size:12px; letter-spacing:.06em; color:var(--accent-d); text-transform:uppercase; margin:0 0 20px;}
-.ah .hero h1{font-size:clamp(2.3rem,5vw,4rem); font-weight:600; letter-spacing:-.02em;}
-.ah .lede{margin:24px 0 0; max-width:46ch; color:var(--muted); font-size:17px;}
+.ah .hero::before{content:""; position:absolute; top:-40px; left:20%; width:520px; height:420px; z-index:-1;
+  background:radial-gradient(circle, rgba(78,150,255,.18), transparent 68%); filter:blur(20px);}
+.ah .eyebrow{font-size:12px; letter-spacing:.06em; color:var(--blue2); text-transform:uppercase; margin:0 0 22px; font-weight:400;}
+.ah .hero h1{font-size:clamp(2.3rem,5vw,3.9rem); font-weight:200; letter-spacing:-.01em;}
+.ah .lede{margin:24px 0 0; max-width:48ch; color:var(--muted); font-size:16px; font-weight:300;}
 .ah .pills{display:flex; flex-wrap:wrap; gap:8px; margin:26px 0 0;}
-.ah .pills span{font-size:11.5px; padding:5px 11px; border:1px solid var(--line); border-radius:999px; color:var(--text);}
+.ah .pills span{font-size:11.5px; padding:6px 12px; border:1px solid var(--glassbrd); border-radius:999px; color:var(--text); background:var(--glass);}
 .ah .hero-cta{display:flex; flex-wrap:wrap; gap:12px; margin-top:30px;}
 .ah .hero-art{display:grid; place-items:center;}
-.ah .hero-art svg{width:100%; max-width:380px; height:auto;}
-.ah .flow-path{stroke-dashoffset:200; animation:dash 3s linear infinite;}
+.ah .hero-art svg{width:100%; max-width:390px; height:auto; animation:float 7s ease-in-out infinite;}
+.ah .flow-path{stroke-dashoffset:200; animation:dash 3.4s linear infinite;}
 @keyframes dash{to{stroke-dashoffset:0;}}
-
-.ah .stats{max-width:1160px; margin:0 auto; display:grid; grid-template-columns:repeat(5,1fr);
-  gap:1px; background:var(--line); border:1px solid var(--line); border-radius:14px; overflow:hidden;}
-.ah .stat{background:var(--paper); padding:24px 20px; display:flex; flex-direction:column; gap:6px;}
-.ah .stat-n{font-family:'Space Grotesk',sans-serif; font-size:30px; font-weight:600; color:var(--ink);}
-.ah .stat-l{font-size:11px; color:var(--muted); line-height:1.35;}
-
-.ah .feed{max-width:680px; margin:0 auto; padding-top:80px;}
-.ah .feed-head{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;}
-.ah .feed h2,.ah .work h2,.ah .stack h2{font-size:clamp(1.7rem,3vw,2.3rem); font-weight:600;}
-.ah .sub{font-size:12.5px; color:var(--muted); margin:8px 0 0;}
-.ah .live{display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:var(--accent-d);
-  background:rgba(21,183,166,.1); padding:6px 11px; border-radius:999px;}
-.ah .live svg{animation:pulse 1.8s ease-in-out infinite;}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
 @keyframes pulse{0%,100%{opacity:.4;}50%{opacity:1;}}
-.ah .tabs{display:flex; gap:8px; flex-wrap:wrap; margin:22px 0 24px;}
-.ah .tab{font-size:12px; padding:7px 13px; border-radius:999px; border:1px solid var(--line);
-  background:transparent; color:var(--muted); cursor:pointer; transition:.15s;}
-.ah .tab:hover{border-color:var(--accent);}
-.ah .tab.on{background:var(--ink); color:#fff; border-color:var(--ink);}
+
+/* STATS */
+.ah .stats{max-width:1160px; margin:0 auto; display:grid; grid-template-columns:repeat(5,1fr);
+  gap:1px; background:var(--line); border:1px solid var(--line); border-radius:16px; overflow:hidden;}
+.ah .stat{background:#080C16; padding:26px 20px; display:flex; flex-direction:column; gap:8px;}
+.ah .stat-n{font-size:34px; font-weight:200; color:#EAF0FF; text-shadow:0 0 20px rgba(78,150,255,.45); line-height:1;}
+.ah .stat-l{font-size:11px; color:var(--muted); line-height:1.4;}
+
+/* FEED */
+.ah .feed{max-width:680px; margin:0 auto; padding-top:84px;}
+.ah .feed-head{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+.ah .feed h2,.ah .work h2,.ah .stack h2{font-size:clamp(1.7rem,3vw,2.3rem); font-weight:200;}
+.ah .sub{font-size:12.5px; color:var(--muted); margin:9px 0 0;}
+.ah .live{display:inline-flex; align-items:center; gap:6px; font-size:11.5px; color:var(--blue2);
+  background:rgba(78,150,255,.1); padding:6px 12px; border-radius:999px; border:1px solid rgba(78,150,255,.25);}
+.ah .live svg{animation:pulse 1.8s ease-in-out infinite;}
+.ah .tabs{display:flex; gap:8px; flex-wrap:wrap; margin:24px 0 24px;}
+.ah .tab{font-size:12px; padding:7px 14px; border-radius:999px; border:1px solid var(--glassbrd);
+  background:transparent; color:var(--muted); cursor:pointer; transition:.2s; font-family:'Poppins'; font-weight:300;}
+.ah .tab:hover{border-color:var(--blue); color:var(--blue2);}
+.ah .tab.on{background:rgba(78,150,255,.16); color:#EAF0FF; border-color:rgba(78,150,255,.6); box-shadow:0 0 16px rgba(78,150,255,.3);}
 .ah .cards{display:flex; flex-direction:column; gap:18px;}
-.ah .card{background:#fff; border:1px solid var(--line); border-radius:16px; padding:20px 20px 8px; transition:.2s;}
-.ah .card:hover{border-color:rgba(21,183,166,.5); box-shadow:0 10px 40px -22px rgba(12,22,38,.4);}
+.ah .card{background:var(--glass); border:1px solid var(--glassbrd); border-radius:18px; padding:20px 20px 8px; transition:.25s; backdrop-filter:blur(6px);}
+.ah .card:hover{border-color:rgba(78,150,255,.45); box-shadow:0 0 40px -14px rgba(78,150,255,.4); transform:translateY(-2px);}
 .ah .card-top{display:flex; gap:12px; align-items:center;}
-.ah .avatar{display:grid; place-items:center; width:46px; height:46px; border-radius:11px; flex:none;
-  background:linear-gradient(135deg,var(--accent),#6C5CE7); color:#fff; font-family:'IBM Plex Mono',monospace;
-  font-weight:600; font-size:15px;}
-.ah .who{display:flex; flex-direction:column; line-height:1.3;}
-.ah .who-name{display:flex; align-items:center; gap:5px; font-weight:600; font-size:14.5px; font-family:'Space Grotesk',sans-serif;}
-.ah .verified{color:var(--accent);}
+.ah .avatar{display:grid; place-items:center; width:46px; height:46px; border-radius:12px; flex:none;
+  background:linear-gradient(135deg,#4E96FF,#A855F7); color:#fff; font-weight:500; font-size:15px; box-shadow:0 0 18px rgba(78,150,255,.4);}
+.ah .who{display:flex; flex-direction:column; line-height:1.35;}
+.ah .who-name{display:flex; align-items:center; gap:5px; font-weight:400; font-size:14.5px;}
+.ah .verified{color:var(--blue);}
 .ah .who-role{font-size:11px; color:var(--muted);}
 .ah .who-meta{font-size:11px; color:var(--muted); margin-top:1px;}
-.ah .card-title{font-size:18px; font-weight:600; margin:15px 0 8px;}
-.ah .card-body{font-size:14.5px; color:#39485C; margin:0 0 15px;}
-.ah .card-cover{border-radius:12px; overflow:hidden; border:1px solid var(--line);}
+.ah .card-title{font-size:18px; font-weight:400; margin:15px 0 8px; color:#EAF0FF;}
+.ah .card-body{font-size:14px; color:#AFBBD6; margin:0 0 15px; font-weight:300; line-height:1.62;}
+.ah .card-cover{border-radius:12px; overflow:hidden; border:1px solid var(--glassbrd);}
 .ah .cover{display:block; width:100%; height:170px;}
 .ah .card-actions{display:flex; gap:6px; padding:6px 0; margin-top:6px; border-top:1px solid var(--line);}
 .ah .card-actions button{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:var(--muted);
-  background:transparent; border:none; cursor:pointer; padding:9px 12px; border-radius:8px; transition:.15s;}
-.ah .card-actions button:hover{background:var(--paper2); color:var(--accent-d);}
+  background:transparent; border:none; cursor:pointer; padding:9px 12px; border-radius:9px; transition:.2s; font-family:'Poppins';}
+.ah .card-actions button:hover{background:rgba(78,150,255,.1); color:var(--blue2);}
 .ah .card-actions .share{margin-left:auto;}
 
+/* WORK */
 .ah .work{max-width:880px; margin:0 auto; padding-top:96px;}
 .ah .timeline{list-style:none; margin:34px 0 0; padding:0;}
 .ah .job{padding:26px 0; border-top:1px solid var(--line);}
 .ah .job-head{display:flex; justify-content:space-between; gap:18px; flex-wrap:wrap; align-items:baseline;}
-.ah .job h3{font-size:19px; font-weight:600;}
-.ah .job-org{font-size:14px; color:var(--accent-d); margin:5px 0 0; font-weight:500;}
-.ah .job-org .mono{color:var(--muted); font-weight:400;}
+.ah .job h3{font-size:19px; font-weight:400;}
+.ah .job-org{font-size:14px; color:var(--blue2); margin:5px 0 0; font-weight:400;}
+.ah .job-org .place{color:var(--muted); font-weight:300;}
 .ah .job-dates{font-size:12px; color:var(--muted); white-space:nowrap;}
 .ah .job ul{margin:15px 0 0; padding-left:18px; display:flex; flex-direction:column; gap:8px;}
-.ah .job ul li{font-size:14px; color:#39485C;}
+.ah .job ul li{font-size:14px; color:#AFBBD6; font-weight:300;}
 .ah .edu{display:flex; gap:13px; align-items:flex-start; margin-top:30px; padding:20px 22px;
-  background:var(--ink); color:var(--text-d); border-radius:14px;}
-.ah .edu-icon{color:var(--accent); flex:none; margin-top:2px;}
-.ah .edu p{margin:0; font-size:13.5px; color:#C7D2E0;}
-.ah .edu strong{color:#fff;}
+  background:var(--glass); border:1px solid rgba(78,150,255,.2); border-radius:16px; box-shadow:0 0 30px -18px rgba(78,150,255,.5);}
+.ah .edu-icon{color:var(--blue); flex:none; margin-top:2px; filter:drop-shadow(0 0 6px rgba(78,150,255,.6));}
+.ah .edu p{margin:0; font-size:13.5px; color:#AFBBD6; font-weight:300;}
+.ah .edu strong{color:#EAF0FF; font-weight:400;}
 
+/* STACK */
 .ah .stack{max-width:1080px; margin:0 auto; padding-top:96px; padding-bottom:30px;}
 .ah .stack-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:30px 48px; margin-top:34px;}
-.ah .stack-col h4{font-size:12px; letter-spacing:.04em; color:var(--accent-d); text-transform:uppercase; margin-bottom:14px;}
-.ah .chips{display:flex; flex-wrap:wrap; gap:8px;}
-.ah .chip{font-size:12px; padding:6px 11px; border:1px solid var(--line); border-radius:8px; color:var(--text); background:#fff;}
+.ah .stack-col h4{font-size:12px; letter-spacing:.04em; color:var(--blue2); text-transform:uppercase; margin-bottom:14px; font-weight:400;}
+.ah .chips2{display:flex; flex-wrap:wrap; gap:8px;}
+.ah .chip2{font-size:12px; padding:7px 12px; border:1px solid var(--glassbrd); border-radius:9px; color:var(--text); background:var(--glass); transition:.2s;}
+.ah .chip2:hover{border-color:rgba(78,150,255,.45); box-shadow:0 0 14px rgba(78,150,255,.25);}
 
-.ah .contact{margin-top:90px; background:var(--ink); color:var(--text-d); padding:80px 24px 44px; text-align:center;}
-.ah .contact h2{font-size:clamp(2rem,5vw,3.4rem); font-weight:600; color:#fff;}
-.ah .foot-lede{max-width:46ch; margin:18px auto 0; color:var(--muted-d); font-size:16px;}
-.ah .foot-links{display:flex; flex-wrap:wrap; justify-content:center; gap:10px 26px; margin:34px 0; font-size:13px; color:var(--muted-d);}
-.ah .foot-links a,.ah .foot-links span{display:inline-flex; align-items:center; gap:8px;}
-.ah .foot-links a:hover{color:var(--accent);}
-.ah .foot-btn{background:var(--accent); color:#04211D;}
-.ah .foot-btn:hover{background:#1ad0bd;}
-.ah .copyright{margin-top:40px; font-size:11px; color:var(--muted-d); opacity:.7;}
+/* CONTACT */
+.ah .contact{margin-top:96px; padding:90px 24px 46px; text-align:center; position:relative;
+  background:linear-gradient(180deg, transparent, rgba(78,150,255,.05)); border-top:1px solid var(--line);}
+.ah .contact::before{content:""; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:560px; height:300px; z-index:0;
+  background:radial-gradient(circle, rgba(78,150,255,.16), transparent 70%); filter:blur(24px);}
+.ah .contact > *{position:relative; z-index:1;}
+.ah .contact h2{font-size:clamp(2rem,5vw,3.4rem); font-weight:200; color:#EAF0FF;}
+.ah .foot-lede{max-width:46ch; margin:18px auto 0; color:var(--muted); font-size:15px; font-weight:300;}
+.ah .foot-links{display:flex; flex-wrap:wrap; justify-content:center; gap:10px 26px; margin:34px 0; font-size:13px; color:var(--muted);}
+.ah .foot-links a,.ah .foot-links span{display:inline-flex; align-items:center; gap:8px; transition:.2s;}
+.ah .foot-links a:hover{color:var(--blue2); text-shadow:0 0 12px rgba(78,150,255,.6);}
+.ah .foot-btn{margin-top:4px;}
+.ah .copyright{margin-top:42px; font-size:11px; color:var(--faint);}
 
 @media (max-width:860px){
   .ah .hero{grid-template-columns:1fr; padding-top:48px; gap:32px;}
@@ -535,6 +544,6 @@ const CSS = `
   .ah .stack-grid{grid-template-columns:1fr;}
 }
 @media (prefers-reduced-motion:reduce){
-  .ah *{animation:none !important; scroll-behavior:auto;}
+  .ah *{animation:none !important;}
 }
 `;
