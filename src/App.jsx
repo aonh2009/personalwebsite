@@ -92,6 +92,36 @@ function timeAgo(iso) {
   return Math.floor(s / 604800) + "w";
 }
 
+// Friendly publication name + domain from a source URL.
+const SOURCE_NAMES = {
+  "finextra.com": "Finextra",
+  "pymnts.com": "PYMNTS",
+  "fintechfutures.com": "Fintech Futures",
+  "openbankingexpo.com": "Open Banking Expo",
+  "thepaypers.com": "The Paypers",
+  "americanbanker.com": "American Banker",
+  "bankingdive.com": "Banking Dive",
+};
+function sourceFromUrl(url) {
+  if (!url) return null;
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, "");
+    if (SOURCE_NAMES[host]) return { name: SOURCE_NAMES[host], domain: host };
+    const base = host.split(".").slice(-2, -1)[0] || host;
+    return { name: base.charAt(0).toUpperCase() + base.slice(1), domain: host };
+  } catch {
+    return null;
+  }
+}
+
+// Article date, e.g. "2 Jul 2026".
+function fmtDate(iso) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
 async function loadPosts() {
   if (!supabase) {
     console.warn("[feed] Supabase not configured: VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY are missing from this build. Showing seed posts.");
@@ -441,15 +471,26 @@ export default function App() {
             <div className="cards" ref={feedRef}>
               {shown.map((p, i) => {
                 const cat = CATEGORIES[p.cat] || CATEGORIES.news;
+                const src = sourceFromUrl(p.source_url);
+                const date = fmtDate(p.created_at);
                 return (
                   <FloatCard key={p.id} className="card" wrapClass="feed-slide" eager index={i} reduce={reduce}>
                     <div className="card-top">
-                      <span className="avatar">AH</span>
+                      <span className="avatar">{src ? src.name.charAt(0).toUpperCase() : "AH"}</span>
                       <div className="who">
-                        <span className="who-name">Aon Hassan <BadgeCheck size={15} className="verified" /></span>
-                        <span className="who-role">VP Engineering · Open Banking · Riyadh</span>
+                        <span className="who-name">
+                          {src ? (
+                            <a href={p.source_url} target="_blank" rel="noopener noreferrer" className="src-link">
+                              {src.name} <ArrowUpRight size={13} />
+                            </a>
+                          ) : (
+                            <>Aon Hassan <BadgeCheck size={15} className="verified" /></>
+                          )}
+                        </span>
+                        <span className="who-role">{src ? src.domain : "VP Engineering · Open Banking · Riyadh"}</span>
                         <span className="who-meta">
-                          {p.time} · <i style={{ color: cat.color, textShadow: `0 0 8px ${cat.color}` }}>● </i>{cat.label}
+                          {date && <>{date} · </>}
+                          <i style={{ color: cat.color, textShadow: `0 0 8px ${cat.color}` }}>● </i>{cat.label}
                         </span>
                       </div>
                     </div>
@@ -719,6 +760,9 @@ const CSS = `
   background:linear-gradient(135deg,#4E96FF,#A855F7); color:#fff; font-weight:500; font-size:15px; box-shadow:0 0 18px rgba(78,150,255,.4);}
 .ah .who{display:flex; flex-direction:column; line-height:1.35;}
 .ah .who-name{display:flex; align-items:center; gap:5px; font-weight:400; font-size:14.5px;}
+.ah .src-link{display:inline-flex; align-items:center; gap:4px; color:#EAF0FF; transition:.2s;}
+.ah .src-link:hover{color:var(--blue2); text-shadow:0 0 12px rgba(78,150,255,.6);}
+.ah .src-link svg{opacity:.7;}
 .ah .verified{color:var(--blue);}
 .ah .who-role{font-size:11px; color:var(--muted);}
 .ah .who-meta{font-size:11px; color:var(--muted); margin-top:1px;}
