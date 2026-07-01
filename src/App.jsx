@@ -529,7 +529,7 @@ export default function App() {
             <p>
               <strong>MSc Finance, London School of Economics</strong> · {" "}
               <strong>BSc Computer Science, Western University</strong> · {" "}
-              PfMP®, ISC2 Certified in Cybersecurity, MCSD (retired). British and Canadian citizen.
+              PfMP®, ISC2 Certified in Cybersecurity, MCSD. British and Canadian citizen.
             </p>
           </div>
         </section>
