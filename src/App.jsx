@@ -4,6 +4,7 @@ import {
   ShieldCheck, Mail, Phone, MapPin, Globe, BadgeCheck, Radio,
 } from "lucide-react";
 import { supabase } from "./supabaseClient";
+import { LightBankPage } from "./LightBank";
 
 /*
   Aon Hassan, personal site. Dark neon direction.
@@ -136,8 +137,20 @@ function CoverArt({ cat }) {
 export default function App() {
   const [filter, setFilter] = useState("all");
   const [posts, setPosts] = useState(SEED_POSTS);
+  const [view, setView] = useState(
+    typeof window !== "undefined" && window.location.hash === "#light-bank" ? "lightbank" : "site"
+  );
 
   useEffect(() => { loadPosts().then(setPosts); }, []);
+  useEffect(() => {
+    const onHash = () => setView(window.location.hash === "#light-bank" ? "lightbank" : "site");
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
+  if (view === "lightbank") {
+    return <LightBankPage onBack={() => { window.location.hash = ""; }} />;
+  }
 
   const shown = useMemo(
     () => (filter === "all" ? posts : posts.filter((p) => p.cat === filter)),
@@ -162,6 +175,7 @@ export default function App() {
           <a href="#feed">Feed</a>
           <a href="#work">Work</a>
           <a href="#stack">Stack</a>
+          <a href="#projects">Projects</a>
           <a href="#contact">Contact</a>
         </nav>
         <a href="mailto:aon@aonhassan.com" className="btn btn-solid">
@@ -377,6 +391,31 @@ export default function App() {
             ))}
           </div>
         </section>
+
+        <section className="projects" id="projects">
+          <h2>Projects</h2>
+          <p className="sub">Things I build to keep my hands in the product, not just the org chart.</p>
+          <div className="proj-grid">
+            <article className="proj-card">
+              <div className="proj-thumb" aria-hidden="true">
+                <span className="proj-ring" />
+                <span className="proj-bal">9,418</span>
+              </div>
+              <div className="proj-info">
+                <span className="proj-tag">Design · React · Interaction study</span>
+                <h3>Light Bank</h3>
+                <p>
+                  A working prototype of a luxury digital banking concept. Dark neon UI, a live account ring that
+                  recolors as you switch accounts, a send-money flow, and a product configurator. Rebuilt in React
+                  from the ground up, micro-interactions and all.
+                </p>
+                <button className="btn btn-solid" onClick={() => { window.location.hash = "light-bank"; }}>
+                  View prototype <ArrowUpRight size={16} />
+                </button>
+              </div>
+            </article>
+          </div>
+        </section>
       </main>
 
       <footer className="contact" id="contact">
@@ -522,6 +561,19 @@ const CSS = `
 .ah .chip2{font-size:12px; padding:7px 12px; border:1px solid var(--glassbrd); border-radius:9px; color:var(--text); background:var(--glass); transition:.2s;}
 .ah .chip2:hover{border-color:rgba(78,150,255,.45); box-shadow:0 0 14px rgba(78,150,255,.25);}
 
+/* PROJECTS */
+.ah .projects{max-width:880px; margin:0 auto; padding-top:96px;}
+.ah .projects .sub{font-size:12.5px; color:var(--muted); margin:9px 0 0;}
+.ah .proj-grid{margin-top:28px;}
+.ah .proj-card{display:grid; grid-template-columns:190px 1fr; gap:26px; align-items:center; padding:24px; background:var(--glass); border:1px solid var(--glassbrd); border-radius:18px; transition:.25s;}
+.ah .proj-card:hover{border-color:rgba(78,150,255,.45); box-shadow:0 0 40px -14px rgba(78,150,255,.4);}
+.ah .proj-thumb{position:relative; height:150px; border-radius:14px; background:radial-gradient(circle at 50% 45%, #10203f, #05070E 72%); display:grid; place-items:center; overflow:hidden;}
+.ah .proj-ring{width:96px; height:96px; border-radius:50%; border:1.5px solid rgba(78,150,255,.55); box-shadow:0 0 22px rgba(78,150,255,.4), inset 0 0 16px rgba(78,150,255,.2); animation:float 6s ease-in-out infinite;}
+.ah .proj-bal{position:absolute; font-weight:200; font-size:22px; color:#EAF0FF; text-shadow:0 0 16px rgba(78,150,255,.6);}
+.ah .proj-tag{font-size:11px; letter-spacing:.04em; color:var(--blue2); text-transform:uppercase;}
+.ah .proj-info h3{font-size:20px; font-weight:400; margin:8px 0 8px;}
+.ah .proj-info p{font-size:14px; color:#AFBBD6; font-weight:300; margin:0 0 16px; max-width:54ch; line-height:1.6;}
+
 /* CONTACT */
 .ah .contact{margin-top:96px; padding:90px 24px 46px; text-align:center; position:relative;
   background:linear-gradient(180deg, transparent, rgba(78,150,255,.05)); border-top:1px solid var(--line);}
@@ -542,6 +594,7 @@ const CSS = `
   .ah .stats{grid-template-columns:repeat(2,1fr);}
   .ah .nav-links{display:none;}
   .ah .stack-grid{grid-template-columns:1fr;}
+  .ah .proj-card{grid-template-columns:1fr;}
 }
 @media (prefers-reduced-motion:reduce){
   .ah *{animation:none !important;}
