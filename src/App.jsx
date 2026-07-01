@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   Heart, MessageCircle, Repeat2, Share2, ArrowUpRight,
   ShieldCheck, Mail, Phone, MapPin, Globe, BadgeCheck, Radio,
@@ -134,12 +135,62 @@ function CoverArt({ cat }) {
   );
 }
 
+const ORBS = [
+  { c: "#4E96FF", size: 560, left: "2%",  top: "0%",  x: [0, 90, -30, 0],  y: [0, 40, 80, 0],  dur: 24 },
+  { c: "#A855F7", size: 480, left: "60%", top: "8%",  x: [0, -70, 40, 0],  y: [0, 60, -30, 0], dur: 30 },
+  { c: "#22C55E", size: 400, left: "20%", top: "55%", x: [0, 60, -50, 0],  y: [0, -40, 30, 0], dur: 34 },
+  { c: "#38BDF8", size: 440, left: "72%", top: "62%", x: [0, -50, 30, 0],  y: [0, 30, -60, 0], dur: 27 },
+];
+
+function MovingBackground({ reduce }) {
+  return (
+    <div className="bg-field" aria-hidden="true">
+      {ORBS.map((o, i) => (
+        <motion.div
+          key={i}
+          className="orb"
+          style={{
+            width: o.size, height: o.size, left: o.left, top: o.top,
+            background: `radial-gradient(circle, ${o.c} 0%, transparent 68%)`,
+          }}
+          animate={reduce ? {} : { x: o.x, y: o.y, scale: [1, 1.14, 0.96, 1] }}
+          transition={{ duration: o.dur, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
+      <div className="bg-grain" />
+    </div>
+  );
+}
+
+function FloatCard({ children, className, index = 0, reduce }) {
+  const dur = 5 + (index % 4) * 0.8;
+  const delay = (index % 5) * 0.22;
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-40px" }}
+      transition={{ duration: 0.6, ease: [0.2, 0.7, 0.2, 1] }}
+      whileHover={reduce ? undefined : { y: -10, transition: { duration: 0.3 } }}
+    >
+      <motion.div
+        className={className}
+        animate={reduce ? undefined : { y: [0, -9, 0] }}
+        transition={{ duration: dur, repeat: Infinity, ease: "easeInOut", delay }}
+      >
+        {children}
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function App() {
   const [filter, setFilter] = useState("all");
   const [posts, setPosts] = useState(SEED_POSTS);
   const [view, setView] = useState(
     typeof window !== "undefined" && window.location.hash === "#light-bank" ? "lightbank" : "site"
   );
+  const reduce = useReducedMotion();
 
   useEffect(() => { loadPosts().then(setPosts); }, []);
   useEffect(() => {
@@ -162,6 +213,7 @@ export default function App() {
   return (
     <div className="ah">
       <style>{CSS}</style>
+      <MovingBackground reduce={reduce} />
 
       <header className="nav">
         <a href="#top" className="brand">
@@ -185,7 +237,9 @@ export default function App() {
 
       <main id="top">
         <section className="hero">
-          <div className="hero-copy">
+          <motion.div className="hero-copy"
+            initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.2, 0.7, 0.2, 1] }}>
             <p className="eyebrow">Open Banking · Embedded Finance · AI-led delivery</p>
             <h1>
               I build the rails that move money between banks, fintechs,
@@ -203,16 +257,20 @@ export default function App() {
               <span>ISC2 CC</span>
             </div>
             <div className="hero-cta">
-              <a href="mailto:aon@aonhassan.com" className="btn btn-solid">
+              <motion.a href="mailto:aon@aonhassan.com" className="btn btn-solid"
+                whileHover={reduce ? undefined : { scale: 1.04 }} whileTap={{ scale: 0.97 }}>
                 <Mail size={16} /> Email me
-              </a>
-              <a href="#feed" className="btn btn-ghost">
+              </motion.a>
+              <motion.a href="#feed" className="btn btn-ghost"
+                whileHover={reduce ? undefined : { scale: 1.04 }} whileTap={{ scale: 0.97 }}>
                 Read the feed <ArrowUpRight size={16} />
-              </a>
+              </motion.a>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="hero-art" aria-hidden="true">
+          <motion.div className="hero-art" aria-hidden="true"
+            initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.2, 0.7, 0.2, 1] }}>
             <svg viewBox="0 0 360 360">
               <defs>
                 <linearGradient id="flow" x1="0" y1="0" x2="1" y2="1">
@@ -245,7 +303,7 @@ export default function App() {
                   strokeDasharray="3 7" className="flow-path" style={{ animationDelay: `${i * 0.4}s` }} />
               ))}
             </svg>
-          </div>
+          </motion.div>
         </section>
 
         <section className="stats">
@@ -255,11 +313,13 @@ export default function App() {
             ["$20M+", "revenue and new business"],
             ["70+", "engineers and PMs led"],
             ["3", "central banks: CBUAE, SAMA, CBB"],
-          ].map(([n, l]) => (
-            <div key={l} className="stat">
+          ].map(([n, l], i) => (
+            <motion.div key={l} className="stat"
+              initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08 }}>
               <span className="stat-n">{n}</span>
               <span className="stat-l">{l}</span>
-            </div>
+            </motion.div>
           ))}
         </section>
 
@@ -282,10 +342,10 @@ export default function App() {
           </div>
 
           <div className="cards">
-            {shown.map((p) => {
+            {shown.map((p, i) => {
               const cat = CATEGORIES[p.cat] || CATEGORIES.news;
               return (
-                <article className="card" key={p.id}>
+                <FloatCard key={p.id} className="card" index={i} reduce={reduce}>
                   <div className="card-top">
                     <span className="avatar">AH</span>
                     <div className="who">
@@ -305,7 +365,7 @@ export default function App() {
                     <button><Repeat2 size={16} /> {p.reposts}</button>
                     <button className="share"><Share2 size={16} /> Share</button>
                   </div>
-                </article>
+                </FloatCard>
               );
             })}
           </div>
@@ -396,7 +456,7 @@ export default function App() {
           <h2>Projects</h2>
           <p className="sub">Things I build to keep my hands in the product, not just the org chart.</p>
           <div className="proj-grid">
-            <article className="proj-card">
+            <FloatCard className="proj-card" index={0} reduce={reduce}>
               <div className="proj-thumb" aria-hidden="true">
                 <span className="proj-ring" />
                 <span className="proj-bal">9,418</span>
@@ -409,11 +469,12 @@ export default function App() {
                   recolors as you switch accounts, a send-money flow, and a product configurator. Rebuilt in React
                   from the ground up, micro-interactions and all.
                 </p>
-                <button className="btn btn-solid" onClick={() => { window.location.hash = "light-bank"; }}>
+                <motion.button className="btn btn-solid" onClick={() => { window.location.hash = "light-bank"; }}
+                  whileHover={reduce ? undefined : { scale: 1.04 }} whileTap={{ scale: 0.97 }}>
                   View prototype <ArrowUpRight size={16} />
-                </button>
+                </motion.button>
               </div>
-            </article>
+            </FloatCard>
           </div>
         </section>
       </main>
@@ -453,6 +514,11 @@ const CSS = `
 .ah h1,.ah h2,.ah h3,.ah h4{font-weight:300; margin:0; letter-spacing:-.005em; line-height:1.15;}
 .ah a{color:inherit; text-decoration:none;}
 .ah section{padding:0 24px; position:relative;}
+.ah > header, .ah > main, .ah > footer{position:relative; z-index:1;}
+.ah .bg-field{position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;}
+.ah .orb{position:absolute; border-radius:50%; filter:blur(74px); opacity:.38; mix-blend-mode:screen; will-change:transform;}
+.ah .bg-grain{position:absolute; inset:0; opacity:.35;
+  background:radial-gradient(rgba(120,150,220,.08) 1px, transparent 1px); background-size:3px 3px;}
 .ah .glow{color:#fff; text-shadow:0 0 20px rgba(78,150,255,.7), 0 0 46px rgba(78,150,255,.4);}
 
 /* NAV */
@@ -516,8 +582,8 @@ const CSS = `
 .ah .tab:hover{border-color:var(--blue); color:var(--blue2);}
 .ah .tab.on{background:rgba(78,150,255,.16); color:#EAF0FF; border-color:rgba(78,150,255,.6); box-shadow:0 0 16px rgba(78,150,255,.3);}
 .ah .cards{display:flex; flex-direction:column; gap:18px;}
-.ah .card{background:var(--glass); border:1px solid var(--glassbrd); border-radius:18px; padding:20px 20px 8px; transition:.25s; backdrop-filter:blur(6px);}
-.ah .card:hover{border-color:rgba(78,150,255,.45); box-shadow:0 0 40px -14px rgba(78,150,255,.4); transform:translateY(-2px);}
+.ah .card{background:var(--glass); border:1px solid var(--glassbrd); border-radius:18px; padding:20px 20px 8px; transition:border .25s, box-shadow .25s; backdrop-filter:blur(6px); box-shadow:0 26px 54px -30px rgba(0,0,0,.9), 0 8px 20px -14px rgba(0,0,0,.6);}
+.ah .card:hover{border-color:rgba(78,150,255,.5); box-shadow:0 34px 66px -26px rgba(0,0,0,.95), 0 0 46px -12px rgba(78,150,255,.45);}
 .ah .card-top{display:flex; gap:12px; align-items:center;}
 .ah .avatar{display:grid; place-items:center; width:46px; height:46px; border-radius:12px; flex:none;
   background:linear-gradient(135deg,#4E96FF,#A855F7); color:#fff; font-weight:500; font-size:15px; box-shadow:0 0 18px rgba(78,150,255,.4);}
@@ -565,8 +631,8 @@ const CSS = `
 .ah .projects{max-width:880px; margin:0 auto; padding-top:96px;}
 .ah .projects .sub{font-size:12.5px; color:var(--muted); margin:9px 0 0;}
 .ah .proj-grid{margin-top:28px;}
-.ah .proj-card{display:grid; grid-template-columns:190px 1fr; gap:26px; align-items:center; padding:24px; background:var(--glass); border:1px solid var(--glassbrd); border-radius:18px; transition:.25s;}
-.ah .proj-card:hover{border-color:rgba(78,150,255,.45); box-shadow:0 0 40px -14px rgba(78,150,255,.4);}
+.ah .proj-card{display:grid; grid-template-columns:190px 1fr; gap:26px; align-items:center; padding:24px; background:var(--glass); border:1px solid var(--glassbrd); border-radius:18px; transition:border .25s, box-shadow .25s; box-shadow:0 26px 54px -30px rgba(0,0,0,.9);}
+.ah .proj-card:hover{border-color:rgba(78,150,255,.5); box-shadow:0 34px 66px -26px rgba(0,0,0,.95), 0 0 46px -12px rgba(78,150,255,.45);}
 .ah .proj-thumb{position:relative; height:150px; border-radius:14px; background:radial-gradient(circle at 50% 45%, #10203f, #05070E 72%); display:grid; place-items:center; overflow:hidden;}
 .ah .proj-ring{width:96px; height:96px; border-radius:50%; border:1.5px solid rgba(78,150,255,.55); box-shadow:0 0 22px rgba(78,150,255,.4), inset 0 0 16px rgba(78,150,255,.2); animation:float 6s ease-in-out infinite;}
 .ah .proj-bal{position:absolute; font-weight:200; font-size:22px; color:#EAF0FF; text-shadow:0 0 16px rgba(78,150,255,.6);}
