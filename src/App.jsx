@@ -323,10 +323,7 @@ export default function App() {
           ))}
         </div>
         <div className="side-sep" />
-        <a href="mailto:aon@aonhassan.com" className="side-item side-cta">
-          <span className="si-icon"><Mail size={18} /></span>
-          <span className="si-label">Email</span>
-        </a>
+        
       </nav>
 
       <main id="top">
@@ -380,10 +377,6 @@ export default function App() {
               <span>ISC2 CC</span>
             </div>
             <div className="hero-cta">
-              <motion.a href="mailto:aon@aonhassan.com" className="btn btn-solid"
-                whileHover={reduce ? undefined : { scale: 1.04 }} whileTap={{ scale: 0.97 }}>
-                <Mail size={16} /> Email me
-              </motion.a>
               <motion.a href="#feed" className="btn btn-ghost"
                 whileHover={reduce ? undefined : { scale: 1.04 }} whileTap={{ scale: 0.97 }}>
                 Read the feed <ArrowUpRight size={16} />
@@ -632,10 +625,8 @@ export default function App() {
           <span><MapPin size={16} /> Riyadh, Saudi Arabia</span>
           <a href="https://aonhassan.com"><Globe size={16} /> aonhassan.com</a>
         </div>
-        <a href="mailto:aon@aonhassan.com" className="btn btn-solid foot-btn">
-          <Mail size={16} /> Email me
-        </a>
-        <p className="copyright">© {new Date().getFullYear()} Aon Hassan · Built for the people doing the hiring.</p>
+       
+        <p className="copyright">© {new Date().getFullYear()} Aon Hassan</p>
       </footer>
     </div>
   );
