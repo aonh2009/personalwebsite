@@ -1,0 +1,28 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aon Hassan logo">
+  <defs>
+    <linearGradient id="stroke" x1="11" y1="49" x2="54" y2="15" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3E8BFF"/>
+      <stop offset="1" stop-color="#9AD0FF"/>
+    </linearGradient>
+    <radialGradient id="tile" cx="50%" cy="36%" r="72%">
+      <stop offset="0" stop-color="#14264A"/>
+      <stop offset="1" stop-color="#080C16"/>
+    </radialGradient>
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect x="1.5" y="1.5" width="61" height="61" rx="16" fill="url(#tile)"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="16" fill="none" stroke="#4E96FF" stroke-opacity="0.30"/>
+
+  <g fill="none" stroke="url(#stroke)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)">
+    <path d="M22 15 L13 49 M22 15 L31 49"/>
+    <path d="M37 15 V49 M53 15 V49"/>
+    <path d="M11 33 H55"/>
+  </g>
+
+  <circle cx="55" cy="33" r="6" fill="#4E96FF" opacity="0.35" filter="url(#glow)"/>
+  <circle cx="55" cy="33" r="3.3" fill="#EAF6FF" filter="url(#glow)"/>
+</svg>

@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import {
   Heart, MessageCircle, Repeat2, Share2, ArrowUpRight,
   ShieldCheck, Mail, Phone, MapPin, Globe, BadgeCheck, Radio,
+  Briefcase, Layers, LayoutGrid, AtSign,
 } from "lucide-react";
 import { supabase } from "./supabaseClient";
 import { LightBankPage } from "./LightBank";
@@ -135,6 +136,14 @@ function CoverArt({ cat }) {
   );
 }
 
+const NAV_ITEMS = [
+  { id: "feed", label: "Feed", icon: <Radio size={18} /> },
+  { id: "work", label: "Work", icon: <Briefcase size={18} /> },
+  { id: "stack", label: "Stack", icon: <Layers size={18} /> },
+  { id: "projects", label: "Projects", icon: <LayoutGrid size={18} /> },
+  { id: "contact", label: "Contact", icon: <AtSign size={18} /> },
+];
+
 const ORBS = [
   { c: "#4E96FF", size: 560, left: "2%",  top: "0%",  x: [0, 90, -30, 0],  y: [0, 40, 80, 0],  dur: 24 },
   { c: "#A855F7", size: 480, left: "60%", top: "8%",  x: [0, -70, 40, 0],  y: [0, 60, -30, 0], dur: 30 },
@@ -191,6 +200,7 @@ export default function App() {
     typeof window !== "undefined" && window.location.hash === "#light-bank" ? "lightbank" : "site"
   );
   const reduce = useReducedMotion();
+  const [active, setActive] = useState("");
 
   useEffect(() => { loadPosts().then(setPosts); }, []);
   useEffect(() => {
@@ -198,6 +208,18 @@ export default function App() {
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
+  useEffect(() => {
+    if (view !== "site") return;
+    const obs = new IntersectionObserver(
+      (entries) => entries.forEach((e) => { if (e.isIntersecting) setActive(e.target.id); }),
+      { rootMargin: "-45% 0px -50% 0px" }
+    );
+    NAV_ITEMS.forEach(({ id }) => {
+      const el = document.getElementById(id);
+      if (el) obs.observe(el);
+    });
+    return () => obs.disconnect();
+  }, [view]);
 
   if (view === "lightbank") {
     return <LightBankPage onBack={() => { window.location.hash = ""; }} />;
@@ -215,25 +237,42 @@ export default function App() {
       <style>{CSS}</style>
       <MovingBackground reduce={reduce} />
 
-      <header className="nav">
-        <a href="#top" className="brand">
-          <span className="brand-mark">AH<i className="spark" /></span>
-          <span className="brand-text">
-            <strong>Aon Hassan</strong>
-            <em>VP / C-Level Engineering &amp; Product</em>
-          </span>
+      <nav className="sidenav" aria-label="Primary">
+        <a href="#top" className="side-brand" aria-label="Back to top">
+          <svg className="brand-glyph" viewBox="0 0 64 64" width="30" height="30" aria-hidden="true">
+            <defs>
+              <linearGradient id="lm-stroke" x1="11" y1="49" x2="54" y2="15" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stopColor="#3E8BFF" /><stop offset="1" stopColor="#9AD0FF" />
+              </linearGradient>
+              <filter id="lm-glow" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="1.5" result="b" />
+                <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+            </defs>
+            <g fill="none" stroke="url(#lm-stroke)" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" filter="url(#lm-glow)">
+              <path d="M22 15 L13 49 M22 15 L31 49" />
+              <path d="M37 15 V49 M53 15 V49" />
+              <path d="M11 33 H55" />
+            </g>
+            <circle className="brand-node" cx="55" cy="33" r="3.3" fill="#EAF6FF" filter="url(#lm-glow)" />
+          </svg>
         </a>
-        <nav className="nav-links">
-          <a href="#feed">Feed</a>
-          <a href="#work">Work</a>
-          <a href="#stack">Stack</a>
-          <a href="#projects">Projects</a>
-          <a href="#contact">Contact</a>
-        </nav>
-        <a href="mailto:aon@aonhassan.com" className="btn btn-solid">
-          <Mail size={15} /> Email me
+        <div className="side-sep" />
+        <div className="side-items">
+          {NAV_ITEMS.map(({ id, label, icon }) => (
+            <a key={id} href={`#${id}`} className={"side-item" + (active === id ? " on" : "")} onClick={() => setActive(id)}>
+              <span className="si-glow" aria-hidden="true" />
+              <span className="si-icon">{icon}</span>
+              <span className="si-label">{label}</span>
+            </a>
+          ))}
+        </div>
+        <div className="side-sep" />
+        <a href="mailto:aon@aonhassan.com" className="side-item side-cta">
+          <span className="si-icon"><Mail size={18} /></span>
+          <span className="si-label">Email</span>
         </a>
-      </header>
+      </nav>
 
       <main id="top">
         <section className="hero">
@@ -521,21 +560,34 @@ const CSS = `
   background:radial-gradient(rgba(120,150,220,.08) 1px, transparent 1px); background-size:3px 3px;}
 .ah .glow{color:#fff; text-shadow:0 0 20px rgba(78,150,255,.7), 0 0 46px rgba(78,150,255,.4);}
 
-/* NAV */
-.ah .nav{position:sticky; top:0; z-index:30; display:flex; align-items:center; justify-content:space-between;
-  gap:16px; padding:14px 24px; background:rgba(5,7,14,.72); backdrop-filter:blur(14px); border-bottom:1px solid var(--line);}
-.ah .brand{display:flex; align-items:center; gap:11px;}
-.ah .brand-mark{position:relative; display:grid; place-items:center; width:38px; height:38px; border-radius:10px;
-  background:#0A1120; border:1px solid rgba(78,150,255,.4); color:#EAF0FF; font-weight:400; font-size:13px; letter-spacing:.06em;
-  box-shadow:0 0 16px rgba(78,150,255,.25);}
-.ah .brand-mark .spark{position:absolute; top:6px; right:7px; width:5px; height:5px; border-radius:50%; background:#8ec5ff;
-  box-shadow:0 0 8px #4E96FF,0 0 16px #4E96FF; animation:pulse 2.4s ease-in-out infinite;}
-.ah .brand-text{display:flex; flex-direction:column; line-height:1.2;}
-.ah .brand-text strong{font-weight:400; font-size:15px;}
-.ah .brand-text em{font-style:normal; font-size:10.5px; color:var(--muted); letter-spacing:.02em;}
-.ah .nav-links{display:flex; gap:28px; font-size:13px; color:var(--muted);}
-.ah .nav-links a{transition:.2s;}
-.ah .nav-links a:hover{color:var(--blue2); text-shadow:0 0 12px rgba(78,150,255,.6);}
+/* SIDE NAV */
+.ah .sidenav{position:fixed; left:22px; top:50%; transform:translateY(-50%); z-index:40;
+  display:flex; flex-direction:column; gap:5px; padding:12px 10px;
+  background:rgba(8,12,22,.62); backdrop-filter:blur(16px); border:1px solid var(--glassbrd); border-radius:20px;
+  box-shadow:0 24px 60px -26px rgba(0,0,0,.85), 0 0 34px -14px rgba(78,150,255,.3);}
+.ah .side-brand{display:grid; place-items:center; width:44px; height:44px; margin:0 auto 2px; border-radius:12px;
+  background:#0A1120; border:1px solid rgba(78,150,255,.4); box-shadow:0 0 16px rgba(78,150,255,.25);}
+.ah .brand-glyph{display:block;}
+.ah .brand-node{animation:nodeGlow 2.6s ease-in-out infinite; transform-box:fill-box; transform-origin:center;}
+@keyframes nodeGlow{0%,100%{opacity:.6;} 50%{opacity:1;}}
+.ah .side-sep{height:1px; background:var(--line); margin:5px 8px;}
+.ah .side-items{display:flex; flex-direction:column; gap:5px;}
+.ah .side-item{position:relative; display:flex; align-items:center; gap:11px; padding:10px 16px 10px 12px; border-radius:13px;
+  color:var(--muted); font-size:13px; font-weight:300; letter-spacing:.01em; border:1px solid transparent; transition:.22s; cursor:pointer;}
+.ah .side-item .si-icon{display:grid; place-items:center; width:24px; height:24px; flex:none; color:inherit; z-index:1;}
+.ah .side-item .si-label{z-index:1; white-space:nowrap;}
+.ah .side-item:hover{color:var(--blue2); background:rgba(78,150,255,.08); border-color:rgba(78,150,255,.25);}
+.ah .side-item.on{color:#EAF0FF; background:linear-gradient(115deg, rgba(78,150,255,.30), rgba(78,150,255,.05));
+  border-color:rgba(78,150,255,.6); box-shadow:0 0 24px rgba(78,150,255,.4), inset 0 0 16px rgba(78,150,255,.15);}
+.ah .side-item.on .si-icon{color:#8ec5ff; filter:drop-shadow(0 0 6px #4E96FF);}
+/* the glow that spills into the page from the active item */
+.ah .si-glow{position:absolute; left:calc(100% + 4px); top:50%; transform:translateY(-50%) scale(.7); width:300px; height:230px;
+  pointer-events:none; opacity:0; transition:opacity .35s ease, transform .35s ease;
+  background:radial-gradient(circle at left center, rgba(78,150,255,.34), rgba(120,90,255,.14) 42%, transparent 70%);}
+.ah .side-item.on .si-glow{opacity:1; transform:translateY(-50%) scale(1);}
+.ah .side-cta{color:#cfe2ff; background:rgba(78,150,255,.1); border-color:rgba(78,150,255,.4);}
+.ah .side-cta:hover{background:rgba(78,150,255,.18); color:#cfe2ff;}
+
 .ah .btn{display:inline-flex; align-items:center; gap:7px; font-size:13.5px; font-weight:400; padding:9px 17px;
   border-radius:11px; cursor:pointer; border:1px solid transparent; transition:.2s; font-family:'Poppins';}
 .ah .btn-solid{background:rgba(78,150,255,.12); border-color:rgba(78,150,255,.5); color:#cfe2ff; box-shadow:0 0 18px rgba(78,150,255,.25);}
@@ -654,11 +706,23 @@ const CSS = `
 .ah .foot-btn{margin-top:4px;}
 .ah .copyright{margin-top:42px; font-size:11px; color:var(--faint);}
 
+@media (min-width:1024px){
+  .ah > main{padding-left:196px;}
+  .ah > footer.contact{margin-left:-196px; padding-left:calc(24px + 196px);}
+}
+@media (max-width:1023px){
+  .ah .sidenav{left:50%; right:auto; top:auto; bottom:16px; transform:translateX(-50%);
+    flex-direction:row; gap:4px; padding:8px; border-radius:16px;}
+  .ah .side-brand{display:none;}
+  .ah .side-sep{display:none;}
+  .ah .si-label{display:none;}
+  .ah .side-item{padding:11px;}
+  .ah .si-glow{display:none;}
+}
 @media (max-width:860px){
   .ah .hero{grid-template-columns:1fr; padding-top:48px; gap:32px;}
   .ah .hero-art{order:-1; max-width:300px; margin:0 auto;}
   .ah .stats{grid-template-columns:repeat(2,1fr);}
-  .ah .nav-links{display:none;}
   .ah .stack-grid{grid-template-columns:1fr;}
   .ah .proj-card{grid-template-columns:1fr;}
 }

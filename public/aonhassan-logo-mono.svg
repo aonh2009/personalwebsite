@@ -1,0 +1,19 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Aon Hassan monogram">
+  <defs>
+    <linearGradient id="stroke2" x1="11" y1="49" x2="54" y2="15" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3E8BFF"/>
+      <stop offset="1" stop-color="#9AD0FF"/>
+    </linearGradient>
+    <filter id="glow2" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="2.2" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <g fill="none" stroke="url(#stroke2)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow2)">
+    <path d="M22 15 L13 49 M22 15 L31 49"/>
+    <path d="M37 15 V49 M53 15 V49"/>
+    <path d="M11 33 H55"/>
+  </g>
+  <circle cx="55" cy="33" r="6" fill="#4E96FF" opacity="0.35" filter="url(#glow2)"/>
+  <circle cx="55" cy="33" r="3.3" fill="#EAF6FF" filter="url(#glow2)"/>
+</svg>
