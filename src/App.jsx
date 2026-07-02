@@ -252,6 +252,31 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHash);
   }, []);
   useEffect(() => {
+    const meta = {
+      site: {
+        title: "Aon Hassan, VP / C-Level Engineering & Product",
+        desc: "Open banking, embedded finance, and AI-led delivery across the GCC. Five digital banks delivered end to end.",
+        url: "https://aonhassan.com/",
+      },
+      lightbank: {
+        title: "Light Bank Prototype | Aon Hassan",
+        desc: "A concept banking prototype rebuilt in React as an interaction study, by Aon Hassan.",
+        url: "https://aonhassan.com/#light-bank",
+      },
+    };
+    const m = meta[view] || meta.site;
+    document.title = m.title;
+    const setTag = (sel, attr, val) => {
+      const el = document.head.querySelector(sel);
+      if (el) el.setAttribute(attr, val);
+    };
+    setTag('meta[name="description"]', "content", m.desc);
+    setTag('meta[property="og:title"]', "content", m.title);
+    setTag('meta[property="og:description"]', "content", m.desc);
+    setTag('meta[property="og:url"]', "content", m.url);
+    setTag('link[rel="canonical"]', "href", m.url);
+  }, [view]);
+  useEffect(() => {
     if (view !== "site") return;
     const obs = new IntersectionObserver(
       (entries) => entries.forEach((e) => { if (e.isIntersecting) setActive(e.target.id); }),

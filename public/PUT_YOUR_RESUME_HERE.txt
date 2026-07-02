@@ -1,6 +1,0 @@
-Put your resume here named exactly:
-
-  Aon_Hassan_Resume.pdf
-
-It will then be served at https://your-site/Aon_Hassan_Resume.pdf
-and the Resume buttons on the site will work.
